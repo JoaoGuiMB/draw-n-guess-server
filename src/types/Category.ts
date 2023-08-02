@@ -1,6 +1,3 @@
-export enum Category {
-  ANIME = "ANIME",
-  ANIMALS = "ANIMALS",
-  MOVIES = "MOVIES",
-  SPORTS = "SPORTS",
-}
+const categories = ["ANIME", "ANIMALS", "MOVIES", "SPORTS"] as const;
+
+export type Category = (typeof categories)[number];
