@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-import { createRoom } from "./src/controllers/room.controller";
+import { createRoom, getRooms } from "./src/controllers/room.controller";
 import app from "./src/app";
 
 const PORT = process.env.PORT || 5000;
@@ -20,7 +20,9 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("create-room", (data) => createRoom(socket, data));
+  socket.on("create-room", (data) => createRoom(socket, data, io));
+
+  socket.on("get-rooms", () => getRooms(socket));
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
