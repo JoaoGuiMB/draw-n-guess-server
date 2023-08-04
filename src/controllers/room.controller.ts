@@ -4,7 +4,7 @@ import { pushRoom, getAllRooms } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
 import { z } from "zod";
-import CustomError from "./utils/CustomError";
+import CustomError from "../utils/CustomError";
 
 export function createRoom(socket: Socket, room: Room, io: Server) {
   try {

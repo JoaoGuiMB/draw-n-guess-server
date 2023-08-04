@@ -1,4 +1,4 @@
-import CustomError from "../controllers/utils/CustomError";
+import CustomError from "../utils/CustomError";
 import { Room } from "../types/Room";
 
 const rooms: Room[] = [];
