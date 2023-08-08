@@ -10,7 +10,6 @@ function pushRoom(room: Room) {
   }
   room.players = [];
   rooms.push(room);
-  console.log(rooms);
 }
 
 function roomExists(name: string) {
@@ -32,6 +31,7 @@ function addToRoom(roomName: string, player: Player) {
     throw new CustomError(400, "Room is full");
   room.players.push(player);
   console.log(rooms);
+  return room;
 }
 
 function removeFromRoom(roomName: string, playerId: string) {
@@ -55,7 +55,7 @@ function removePlayer(playerId: string) {
   const room = findRoomByPlayerId(playerId);
   if (!room) throw new CustomError(404, "Room not found");
   removeFromRoom(room.name, playerId);
-  return room.name;
+  return room;
 }
 
 export {

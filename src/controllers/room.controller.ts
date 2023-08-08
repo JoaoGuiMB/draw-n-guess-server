@@ -43,10 +43,14 @@ export function joinRoom(socket: Socket, joinRoomData: JoinRoom) {
   try {
     const { roomName, player } = joinRoomData;
     player.id = socket.id;
-    addToRoom(roomName, player);
+    const joinedRoom = addToRoom(roomName, player);
     socket.join(roomName);
 
-    socket.emit("player-joined-room", player.id);
+    socket.emit("player-joined-room", {
+      playerId: socket.id,
+      room: joinedRoom,
+    });
+    socket.to(roomName).emit("update-players", joinedRoom.players);
   } catch (e) {
     if (e instanceof CustomError) {
       socket.emit("join-room-error", {
@@ -58,11 +62,12 @@ export function joinRoom(socket: Socket, joinRoomData: JoinRoom) {
 
 export function playerLeaveRoom(socket: Socket) {
   try {
-    const roomName = removePlayer(socket.id);
-    socket.leave(roomName);
+    const room = removePlayer(socket.id);
+    socket.leave(room.name);
     socket.emit("player-left-room", {
       message: "You left the room successfully",
     });
+    socket.to(room.name).emit("update-players", room.players);
     getAllRooms();
   } catch (e) {
     if (e instanceof CustomError) {
