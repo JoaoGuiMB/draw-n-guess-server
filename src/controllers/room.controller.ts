@@ -1,16 +1,17 @@
 import { Socket, Server } from "socket.io";
-import { Room } from "../types/Room";
+import { Guess, Room } from "../types/Room";
 import {
   pushRoom,
   getAllRooms,
   addToRoom,
   removePlayer,
+  findRoomByName,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
 import { z } from "zod";
 import CustomError from "../utils/CustomError";
-import { JoinRoom, LeaveRoom } from "../types/JoinRoom";
+import { JoinRoom } from "../types/JoinRoom";
 
 export function createRoom(socket: Socket, room: Room, io: Server) {
   try {
@@ -69,6 +70,7 @@ export function playerLeaveRoom(socket: Socket) {
     });
     socket.to(room.name).emit("update-players", room.players);
     getAllRooms();
+    socket.leave(room.name);
   } catch (e) {
     if (e instanceof CustomError) {
       socket.emit("player-leave-room-error", {
@@ -76,4 +78,13 @@ export function playerLeaveRoom(socket: Socket) {
       });
     }
   }
+}
+
+export function playerGuess(socket: Socket, data: Guess, io: Server) {
+  const currentRoom = findRoomByName(data.roomName);
+  if (!currentRoom) throw new CustomError(404, "Room not found");
+  console.log("Player guess", data);
+
+  currentRoom.chat.push(`${data.playerNickname}: ${data.guess}`);
+  io.to(currentRoom.name).emit("update-room", currentRoom);
 }

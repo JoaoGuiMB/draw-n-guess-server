@@ -8,6 +8,7 @@ import {
   getRooms,
   joinRoom,
   playerLeaveRoom,
+  playerGuess,
 } from "./src/controllers/room.controller";
 import app from "./src/app";
 
@@ -31,7 +32,9 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (data) => joinRoom(socket, data));
 
-  socket.on("player-leave-room", (data) => playerLeaveRoom(socket));
+  socket.on("player-leave-room", () => playerLeaveRoom(socket));
+
+  socket.on("player-guess", (data) => playerGuess(socket, data, io));
 
   socket.on("disconnect", (data) => {
     console.log("user disconnected");

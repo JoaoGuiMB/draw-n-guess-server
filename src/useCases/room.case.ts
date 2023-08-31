@@ -8,6 +8,7 @@ function pushRoom(room: Room) {
   if (roomExists(room.name)) {
     throw new CustomError(400, "A room with this name already exists");
   }
+  room.chat = [];
   room.players = [];
   rooms.push(room);
 }

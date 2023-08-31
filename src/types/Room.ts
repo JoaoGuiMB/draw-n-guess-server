@@ -10,5 +10,12 @@ export interface Room {
   maximumPoints: MaximumPoints;
   currentWord?: string;
   currentRound?: number;
+  chat: string[];
   players: Player[];
+}
+
+export interface Guess {
+  roomName: string;
+  playerNickname: string;
+  guess: string;
 }
