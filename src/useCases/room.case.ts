@@ -4,7 +4,7 @@ import { Player } from "../types/Player";
 
 const rooms: Room[] = [];
 
-function pushRoom(room: Room) {
+export function pushRoom(room: Room) {
   if (roomExists(room.name)) {
     throw new CustomError(400, "A room with this name already exists");
   }
@@ -13,21 +13,26 @@ function pushRoom(room: Room) {
   rooms.push(room);
 }
 
-function roomExists(name: string) {
+export function roomExists(name: string) {
   return findRoomByName(name) !== undefined;
 }
 
-function findRoomByName(id: string) {
+export function findRoomByName(id: string) {
   return rooms.find((room) => room.name === id);
 }
 
-function getAllRooms() {
+export function getAllRooms() {
   return rooms;
 }
 
-function addToRoom(roomName: string, player: Player) {
+export function validateRoomNotFoundByName(roomName: string) {
   const room = findRoomByName(roomName);
   if (!room) throw new CustomError(404, "Room not found");
+  return room;
+}
+
+export function addToRoom(roomName: string, player: Player) {
+  const room = validateRoomNotFoundByName(roomName);
   if (room.players.length >= room.maximumNumberOfPlayers)
     throw new CustomError(400, "Room is full");
   room.players.push(player);
@@ -35,9 +40,8 @@ function addToRoom(roomName: string, player: Player) {
   return room;
 }
 
-function removeFromRoom(roomName: string, playerId: string) {
-  const room = findRoomByName(roomName);
-  if (!room) throw new CustomError(404, "Room not found");
+export function removeFromRoom(roomName: string, playerId: string) {
+  const room = validateRoomNotFoundByName(roomName);
   const playerIndex = room.players.findIndex(
     (player) => player.id === playerId
   );
@@ -46,34 +50,23 @@ function removeFromRoom(roomName: string, playerId: string) {
   console.log(rooms);
 }
 
-function findRoomByPlayerId(playerId: string) {
+export function findRoomByPlayerId(playerId: string) {
   return rooms.find((room) => {
     return room.players.find((player) => player.id === playerId);
   });
 }
 
-function removePlayer(playerId: string) {
+export function removePlayer(playerId: string) {
   const room = findRoomByPlayerId(playerId);
   if (!room) throw new CustomError(404, "Room not found");
   removeFromRoom(room.name, playerId);
   return room;
 }
 
-function playerMakeGuess(playerGuess: Guess) {
+export function playerMakeGuess(playerGuess: Guess) {
   const { guess, playerNickname, roomName } = playerGuess;
-  const room = findRoomByName(roomName);
-  if (!room) throw new CustomError(404, "Room not found");
+  const room = validateRoomNotFoundByName(roomName);
 
   room.chat.push(`${playerNickname}: ${guess}`);
   return room.chat;
 }
-
-export {
-  pushRoom,
-  findRoomByName,
-  getAllRooms,
-  addToRoom,
-  removeFromRoom,
-  removePlayer,
-  playerMakeGuess,
-};
