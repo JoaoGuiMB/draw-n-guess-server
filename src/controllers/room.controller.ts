@@ -5,7 +5,7 @@ import {
   getAllRooms,
   addToRoom,
   removePlayer,
-  findRoomByName,
+  playerMakeGuess,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
@@ -81,10 +81,6 @@ export function playerLeaveRoom(socket: Socket) {
 }
 
 export function playerGuess(socket: Socket, data: Guess, io: Server) {
-  const currentRoom = findRoomByName(data.roomName);
-  if (!currentRoom) throw new CustomError(404, "Room not found");
-  console.log("Player guess", data);
-
-  currentRoom.chat.push(`${data.playerNickname}: ${data.guess}`);
-  io.to(currentRoom.name).emit("update-chat", currentRoom.chat);
+  const chat = playerMakeGuess(data);
+  io.to(data.roomName).emit("update-chat", chat);
 }

@@ -1,5 +1,5 @@
 import CustomError from "../utils/CustomError";
-import { Room } from "../types/Room";
+import { Guess, Room } from "../types/Room";
 import { Player } from "../types/Player";
 
 const rooms: Room[] = [];
@@ -59,6 +59,15 @@ function removePlayer(playerId: string) {
   return room;
 }
 
+function playerMakeGuess(playerGuess: Guess) {
+  const { guess, playerNickname, roomName } = playerGuess;
+  const room = findRoomByName(roomName);
+  if (!room) throw new CustomError(404, "Room not found");
+
+  room.chat.push(`${playerNickname}: ${guess}`);
+  return room.chat;
+}
+
 export {
   pushRoom,
   findRoomByName,
@@ -66,4 +75,5 @@ export {
   addToRoom,
   removeFromRoom,
   removePlayer,
+  playerMakeGuess,
 };
