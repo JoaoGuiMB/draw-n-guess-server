@@ -86,5 +86,5 @@ export function playerGuess(socket: Socket, data: Guess, io: Server) {
   console.log("Player guess", data);
 
   currentRoom.chat.push(`${data.playerNickname}: ${data.guess}`);
-  io.to(currentRoom.name).emit("update-room", currentRoom);
+  io.to(currentRoom.name).emit("update-chat", currentRoom.chat);
 }
