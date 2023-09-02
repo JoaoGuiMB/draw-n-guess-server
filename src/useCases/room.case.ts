@@ -1,6 +1,7 @@
 import CustomError from "../utils/CustomError";
 import { Guess, Room } from "../types/Room";
 import { Player } from "../types/Player";
+import { PlayerDraw } from "../types/Draw";
 
 const rooms: Room[] = [];
 
@@ -69,4 +70,11 @@ export function playerMakeGuess(playerGuess: Guess) {
 
   room.chat.push(`${playerNickname}: ${guess}`);
   return room.chat;
+}
+
+export function playerMakeDraw(playerDraw: PlayerDraw) {
+  const { drawOptions, roomName } = playerDraw;
+  const room = validateRoomNotFoundByName(roomName);
+  room.canvas = drawOptions;
+  return room.canvas;
 }

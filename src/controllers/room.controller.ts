@@ -6,12 +6,14 @@ import {
   addToRoom,
   removePlayer,
   playerMakeGuess,
+  playerMakeDraw,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
 import { z } from "zod";
 import CustomError from "../utils/CustomError";
 import { JoinRoom } from "../types/JoinRoom";
+import { PlayerDraw } from "../types/Draw";
 
 export function createRoom(socket: Socket, room: Room, io: Server) {
   try {
@@ -80,7 +82,12 @@ export function playerLeaveRoom(socket: Socket) {
   }
 }
 
-export function playerGuess(socket: Socket, data: Guess, io: Server) {
+export function playerGuess(data: Guess, io: Server) {
   const chat = playerMakeGuess(data);
   io.to(data.roomName).emit("update-chat", chat);
+}
+
+export function playerDraw(data: PlayerDraw, io: Server) {
+  const canvas = playerMakeDraw(data);
+  io.to(data.roomName).emit("update-canvas-state", canvas);
 }

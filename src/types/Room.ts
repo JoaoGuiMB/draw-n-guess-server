@@ -1,4 +1,5 @@
 import { Category } from "./Category";
+import { DrawOptions } from "./Draw";
 import { Player } from "./Player";
 
 export type MaximumPoints = "80" | "100" | "120" | "200";
@@ -12,6 +13,7 @@ export interface Room {
   currentRound?: number;
   chat: string[];
   players: Player[];
+  canvas: DrawOptions;
 }
 
 export interface Guess {
