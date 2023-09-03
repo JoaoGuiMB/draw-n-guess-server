@@ -36,9 +36,18 @@ export function addToRoom(roomName: string, player: Player) {
   const room = validateRoomNotFoundByName(roomName);
   if (room.players.length >= room.maximumNumberOfPlayers)
     throw new CustomError(400, "Room is full");
+  if (checkIfPlayerIsAlreadyInRoom(room, player.nickName))
+    throw new CustomError(400, "This nickname is already in use");
   room.players.push(player);
   console.log(rooms);
   return room;
+}
+
+export function checkIfPlayerIsAlreadyInRoom(
+  room: Room,
+  playerNickname: string
+) {
+  return room.players.find((player) => player.nickName === playerNickname);
 }
 
 export function removeFromRoom(roomName: string, playerId: string) {
