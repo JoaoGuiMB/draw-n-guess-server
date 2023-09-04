@@ -10,10 +10,11 @@ export interface Room {
   maximumNumberOfPlayers: number;
   maximumPoints: MaximumPoints;
   currentWord?: string;
-  currentRound?: number;
+  currentPlayer?: string;
   chat: string[];
   players: Player[];
   canvas: DrawOptions;
+  timer: number;
 }
 
 export interface Guess {

@@ -1,4 +1,4 @@
-const sports = [
+export const sports = [
   "Football",
   "Basketball",
   "Baseball",

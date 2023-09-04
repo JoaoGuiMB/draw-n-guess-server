@@ -7,6 +7,9 @@ import {
   removePlayer,
   playerMakeGuess,
   playerMakeDraw,
+  startNewTurn,
+  drecreaseTimer,
+  turnHasStoped,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
@@ -14,6 +17,7 @@ import { z } from "zod";
 import CustomError from "../utils/CustomError";
 import { JoinRoom } from "../types/JoinRoom";
 import { PlayerDraw } from "../types/Draw";
+import { roomConfig } from "../utils/roomConfig";
 
 export function createRoom(socket: Socket, room: Room, io: Server) {
   try {
@@ -90,4 +94,34 @@ export function playerGuess(data: Guess, io: Server) {
 export function playerDraw(data: PlayerDraw, io: Server) {
   const canvas = playerMakeDraw(data);
   io.to(data.roomName).emit("update-canvas-state", canvas);
+}
+
+export function startTurn(roomName: string, io: Server) {
+  const room = startNewTurn(roomName);
+  // let intervalId;
+  // if (room.timer > 0) {
+  //   intervalId = setInterval(() => {
+  //     drecreaseTimer(room);
+  //     io.to(roomName).emit("update-timer", room.timer);
+  //   }, 1000);
+  // } else {
+  //   clearInterval(intervalId);
+  //   room.timer = roomConfig.timer;
+  // }
+  io.to(roomName).emit("turn-started", room);
+}
+
+export function stopTurn(roomName: string, io: Server) {
+  const room = turnHasStoped(roomName);
+  // let intervalId;
+  // if (room.timer > 0) {
+  //   intervalId = setInterval(() => {
+  //     drecreaseTimer(room);
+  //     io.to(roomName).emit("update-timer", room.timer);
+  //   }, 1000);
+  // } else {
+  //   clearInterval(intervalId);
+  //   room.timer = roomConfig.timer;
+  // }
+  io.to(roomName).emit("turn-stopped", room);
 }
