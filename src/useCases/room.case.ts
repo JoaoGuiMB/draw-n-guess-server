@@ -87,9 +87,9 @@ export function playerMakeGuess(playerGuess: Guess) {
 }
 
 export function playerMakeDraw(playerDraw: PlayerDraw) {
-  const { drawOptions, roomName } = playerDraw;
+  const { excalidrawElements, roomName } = playerDraw;
   const room = validateRoomNotFoundByName(roomName);
-  room.canvas = drawOptions;
+  room.canvas = excalidrawElements;
   return room.canvas;
 }
 

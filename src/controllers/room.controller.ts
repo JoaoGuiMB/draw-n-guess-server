@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { Guess, Room } from "../types/Room";
+import { ClientReady, Guess, Room } from "../types/Room";
 import {
   pushRoom,
   getAllRooms,
@@ -93,6 +93,7 @@ export function playerGuess(data: Guess, io: Server) {
 
 export function playerDraw(data: PlayerDraw, io: Server) {
   const canvas = playerMakeDraw(data);
+
   io.to(data.roomName).emit("update-canvas-state", canvas);
 }
 
