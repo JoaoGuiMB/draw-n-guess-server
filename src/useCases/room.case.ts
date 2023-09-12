@@ -95,10 +95,17 @@ export function playerMakeDraw(playerDraw: PlayerDraw) {
 
 export function startNewTurn(roomName: string) {
   const room = validateRoomNotFoundByName(roomName);
+
+  room.timer = 30;
+
   room.currentWord = getWordFromRoomCategory(room.category);
   room.currentPlayer = getRandomPlayerFromRoom(room).nickName;
-  setAllPlayersTurnToFalse(room.currentPlayer, room);
+  setAllPlayersTurnToFalseExcept(room.currentPlayer, room);
   return room;
+}
+
+export function isCurrentPlayerStillInRoom(room: Room) {
+  return room.players.find((player) => player.nickName === room.currentPlayer);
 }
 
 export function getWordFromRoomCategory(category: Category) {
@@ -110,11 +117,12 @@ export function getWordFromRoomCategory(category: Category) {
 export function getRandomPlayerFromRoom(room: Room) {
   const randomIndex = Math.floor(Math.random() * room.players.length);
   const player = room.players[randomIndex];
+  if (!player) throw new CustomError(404, "Player not found");
   player.isPlayerTurn = true;
   return player;
 }
 
-export function setAllPlayersTurnToFalse(playerName: string, room: Room) {
+export function setAllPlayersTurnToFalseExcept(playerName: string, room: Room) {
   room.players.map((player) => {
     if (player.nickName !== playerName) {
       player.isPlayerTurn = false;

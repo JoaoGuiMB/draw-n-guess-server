@@ -10,6 +10,7 @@ import {
   startNewTurn,
   drecreaseTimer,
   turnHasStoped,
+  isCurrentPlayerStillInRoom,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
@@ -98,17 +99,29 @@ export function playerDraw(data: PlayerDraw, io: Server) {
 }
 
 export function startTurn(roomName: string, io: Server) {
-  const room = startNewTurn(roomName);
-  // let intervalId;
-  // if (room.timer > 0) {
-  //   intervalId = setInterval(() => {
-  //     drecreaseTimer(room);
-  //     io.to(roomName).emit("update-timer", room.timer);
-  //   }, 1000);
-  // } else {
-  //   clearInterval(intervalId);
-  //   room.timer = roomConfig.timer;
-  // }
+  let room = startNewTurn(roomName);
+  let intervalId: string | number | NodeJS.Timeout;
+  const timerFunction = () => {
+    if (room.timer > 0) {
+      drecreaseTimer(room);
+      io.to(roomName).emit("update-timer", room.timer);
+    } else {
+      //startTurn(roomName, io);
+      clearInterval(intervalId);
+      if (isCurrentPlayerStillInRoom(room)) {
+        io.to(roomName).emit("reset-turn", room.currentWord);
+      } else {
+        const otherPlayer = room.players[0];
+        io.to(otherPlayer?.id).emit(
+          "drawing-player-left-room",
+          room.currentPlayer
+        );
+      }
+    }
+    console.log("Timmer ticking");
+  };
+  intervalId = setInterval(timerFunction, 1000);
+
   io.to(roomName).emit("turn-started", room);
 }
 
