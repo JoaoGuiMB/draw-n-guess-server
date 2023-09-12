@@ -81,9 +81,35 @@ export function removePlayer(playerId: string) {
 export function playerMakeGuess(playerGuess: Guess) {
   const { guess, playerNickname, roomName } = playerGuess;
   const room = validateRoomNotFoundByName(roomName);
+  let message;
+  const isCorrectGuess = isGuessCorrect(guess, room);
+  let playerGuessRightId: string | undefined;
+  if (!isCorrectGuess) {
+    message = `${playerNickname}: ${guess}`;
+  } else {
+    message = `${playerNickname} acertou a palavra!`;
+    room.players.map((player) => {
+      if (player.nickName === playerNickname) {
+        player.points += 10;
+        playerGuessRightId = player.id;
+      }
+      if (player.nickName === room.currentPlayer) {
+        player.points += 5;
+      }
+    });
+    if (!playerGuessRightId) {
+      throw new CustomError(404, "Player not found");
+    }
+    room.chat.push(message);
+    return { playerGuessRightId, room };
+  }
 
-  room.chat.push(`${playerNickname}: ${guess}`);
-  return room.chat;
+  room.chat.push(message);
+  return { room, playerGuessRightId };
+}
+
+export function isGuessCorrect(guess: string, room: Room) {
+  return guess.toLowerCase() === room.currentWord?.toLowerCase();
 }
 
 export function playerMakeDraw(playerDraw: PlayerDraw) {
@@ -101,6 +127,7 @@ export function startNewTurn(roomName: string) {
   room.currentWord = getWordFromRoomCategory(room.category);
   room.currentPlayer = getRandomPlayerFromRoom(room).nickName;
   setAllPlayersTurnToFalseExcept(room.currentPlayer, room);
+  setAllPlayersGuessToFalse(room);
   return room;
 }
 
@@ -128,6 +155,10 @@ export function setAllPlayersTurnToFalseExcept(playerName: string, room: Room) {
       player.isPlayerTurn = false;
     }
   });
+}
+
+export function setAllPlayersGuessToFalse(room: Room) {
+  room.players.map((player) => (player.playerGuessedRight = false));
 }
 
 export function turnHasStoped(roomName: string) {

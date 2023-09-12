@@ -16,4 +16,5 @@ export interface Player {
   nickName: string;
   avatar: IAvatar;
   isPlayerTurn: boolean;
+  playerGuessedRight: boolean;
 }

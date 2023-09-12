@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
 
   socket.on("player-leave-room", () => playerLeaveRoom(socket));
 
-  socket.on("player-guess", (data) => playerGuess(data, io));
+  socket.on("player-guess", (data) => playerGuess(data, socket, io));
 
   socket.on("player-draw", (data) => playerDraw(data, io));
 

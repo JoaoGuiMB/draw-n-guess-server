@@ -87,9 +87,13 @@ export function playerLeaveRoom(socket: Socket) {
   }
 }
 
-export function playerGuess(data: Guess, io: Server) {
-  const chat = playerMakeGuess(data);
-  io.to(data.roomName).emit("update-chat", chat);
+export function playerGuess(data: Guess, socket: Socket, io: Server) {
+  const { playerGuessRightId, room } = playerMakeGuess(data);
+  io.to(data.roomName).emit("update-chat", room.chat);
+  if (playerGuessRightId) {
+    io.to(playerGuessRightId).emit("player-guessed-right");
+  }
+  io.to(data.roomName).emit("update-players", room.players);
 }
 
 export function playerDraw(data: PlayerDraw, io: Server) {
