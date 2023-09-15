@@ -14,7 +14,7 @@ const avatar = {
 
 export const mockPlayer: Player = {
   nickName: "TestPlayer",
-  id: "",
+  id: "Vws9v-Wegjx4bvBKAAAA",
   isPlayerTurn: false,
   playerGuessedRight: false,
   points: 0,

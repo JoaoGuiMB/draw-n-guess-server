@@ -4,9 +4,12 @@ import {
   pushRoom,
   resetRooms,
   addPlayerToRoom,
+  removeFromRoom,
 } from "../../useCases/room.case";
 import { mockRoom } from "../mocks/room";
 import { mockPlayer } from "../mocks/player";
+
+const ROOM_NOT_FOUND_NAME = "notFoundRoom";
 
 describe("Push room", () => {
   afterAll(() => {
@@ -32,7 +35,7 @@ describe("add player to room", () => {
   });
 
   it("should not find room", () => {
-    expect(() => addPlayerToRoom("notFoundRoom", mockPlayer)).toThrow(
+    expect(() => addPlayerToRoom(ROOM_NOT_FOUND_NAME, mockPlayer)).toThrow(
       "Room not found"
     );
   });
@@ -56,5 +59,30 @@ describe("add player to room", () => {
     expect(() => addPlayerToRoom(mockRoom.name, player3)).toThrow(
       "Room is full"
     );
+  });
+});
+
+describe("remove player from room", () => {
+  afterAll(() => {
+    resetRooms();
+  });
+
+  it("should not find room", () => {
+    expect(() => removeFromRoom(ROOM_NOT_FOUND_NAME, mockPlayer.id)).toThrow(
+      "Room not found"
+    );
+  });
+
+  it("should throw player not found", () => {
+    pushRoom(mockRoom);
+    expect(() => removeFromRoom(mockRoom.name, "invalid player id")).toThrow(
+      "Player not found"
+    );
+  });
+
+  it("should remove player from room", () => {
+    addPlayerToRoom(mockRoom.name, mockPlayer);
+    expect(() => removeFromRoom(mockRoom.name, mockPlayer.id)).not.toThrow();
+    expect(getAllRooms()[0].players.length).toBe(0);
   });
 });
