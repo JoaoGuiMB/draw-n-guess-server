@@ -11,6 +11,8 @@ import {
   drecreaseTimer,
   turnHasStoped,
   isCurrentPlayerStillInRoom,
+  hasPlayerWonTheGame,
+  resetPlayersPoints,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
@@ -106,11 +108,18 @@ export function startTurn(roomName: string, io: Server) {
   let room = startNewTurn(roomName);
   let intervalId: string | number | NodeJS.Timeout;
   const timerFunction = () => {
+    console.log(room.timer);
+    const playerWhoWon = hasPlayerWonTheGame(room);
+    if (playerWhoWon) {
+      const winMessage = `${playerWhoWon.nickName} won the game!`;
+      resetPlayersPoints(room);
+      io.to(roomName).emit("player-won-the-game", winMessage);
+      io.to(roomName).emit("update-players", room.players);
+    }
     if (room.timer > 0) {
       drecreaseTimer(room);
       io.to(roomName).emit("update-timer", room.timer);
     } else {
-      //startTurn(roomName, io);
       clearInterval(intervalId);
       if (isCurrentPlayerStillInRoom(room)) {
         io.to(roomName).emit("reset-turn", room.currentWord);

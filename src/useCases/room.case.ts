@@ -87,7 +87,7 @@ export function playerMakeGuess(playerGuess: Guess) {
   if (!isCorrectGuess) {
     message = `${playerNickname}: ${guess}`;
   } else {
-    message = `${playerNickname} acertou a palavra!`;
+    message = `${playerNickname} got the right word!`;
     room.players.map((player) => {
       if (player.nickName === playerNickname) {
         player.points += 10;
@@ -167,6 +167,19 @@ export function turnHasStoped(roomName: string) {
   room.currentWord = undefined;
   room.players.map((player) => (player.isPlayerTurn = false));
   return room;
+}
+
+export function hasPlayerWonTheGame(room: Room) {
+  const player = room.players.find(
+    (player) => player.points >= +room.maximumPoints
+  );
+  if (player) {
+    return player;
+  }
+}
+
+export function resetPlayersPoints(room: Room) {
+  room.players.map((player) => (player.points = 0));
 }
 
 export function drecreaseTimer(room: Room) {
