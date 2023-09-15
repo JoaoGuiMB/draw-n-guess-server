@@ -180,7 +180,7 @@ export function hasPlayerWonTheGame(room: Room) {
     (player) => player.points >= +room.maximumPoints
   );
   if (player) {
-    return player;
+    return `${player.nickName} won the game!}`;
   }
 }
 

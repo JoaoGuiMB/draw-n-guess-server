@@ -109,11 +109,10 @@ export function startTurn(roomName: string, io: Server) {
   let intervalId: string | number | NodeJS.Timeout;
   const timerFunction = () => {
     console.log(room.timer);
-    const playerWhoWon = hasPlayerWonTheGame(room);
-    if (playerWhoWon) {
-      const winMessage = `${playerWhoWon.nickName} won the game!`;
+    const playerWhoWonMessage = hasPlayerWonTheGame(room);
+    if (playerWhoWonMessage) {
       resetPlayersPoints(room);
-      io.to(roomName).emit("player-won-the-game", winMessage);
+      io.to(roomName).emit("player-won-the-game", playerWhoWonMessage);
       io.to(roomName).emit("update-players", room.players);
     }
     if (room.timer > 0) {
