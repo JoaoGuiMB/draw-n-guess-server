@@ -3,7 +3,7 @@ import { ClientReady, Guess, Room } from "../types/Room";
 import {
   pushRoom,
   getAllRooms,
-  addToRoom,
+  addPlayerToRoom,
   removePlayer,
   playerMakeGuess,
   playerMakeDraw,
@@ -53,7 +53,7 @@ export function joinRoom(socket: Socket, joinRoomData: JoinRoom) {
   try {
     const { roomName, player } = joinRoomData;
     player.id = socket.id;
-    const joinedRoom = addToRoom(roomName, player);
+    const joinedRoom = addPlayerToRoom(roomName, player);
     socket.join(roomName);
 
     socket.emit("player-joined-room", {

@@ -36,7 +36,7 @@ export function validateRoomNotFoundByName(roomName: string) {
   return room;
 }
 
-export function addToRoom(roomName: string, player: Player) {
+export function addPlayerToRoom(roomName: string, player: Player) {
   const room = validateRoomNotFoundByName(roomName);
   if (room.players.length >= room.maximumNumberOfPlayers)
     throw new CustomError(400, "Room is full");
@@ -190,4 +190,8 @@ export function resetPlayersPoints(room: Room) {
 
 export function drecreaseTimer(room: Room) {
   room.timer--;
+}
+
+export function resetRooms() {
+  rooms.splice(0, rooms.length);
 }
