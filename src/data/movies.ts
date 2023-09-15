@@ -1,4 +1,4 @@
-const movies = [
+export const movies = [
   "The Shawshank Redemption",
   "The Godfather",
   "The Dark Knight",

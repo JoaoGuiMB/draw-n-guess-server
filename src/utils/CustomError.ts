@@ -7,6 +7,5 @@ export default class CustomError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
     this.name = Error.name;
     this.statusCode = statusCode;
-    Error.captureStackTrace(this);
   }
 }

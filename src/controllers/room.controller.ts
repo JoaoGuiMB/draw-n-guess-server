@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { Guess, Room } from "../types/Room";
+import { ClientReady, Guess, Room } from "../types/Room";
 import {
   pushRoom,
   getAllRooms,
@@ -7,6 +7,12 @@ import {
   removePlayer,
   playerMakeGuess,
   playerMakeDraw,
+  startNewTurn,
+  drecreaseTimer,
+  turnHasStoped,
+  isCurrentPlayerStillInRoom,
+  hasPlayerWonTheGame,
+  resetPlayersPoints,
 } from "../useCases/room.case";
 import { createRoomSchema } from "../validations/room/createRoom";
 
@@ -14,6 +20,7 @@ import { z } from "zod";
 import CustomError from "../utils/CustomError";
 import { JoinRoom } from "../types/JoinRoom";
 import { PlayerDraw } from "../types/Draw";
+import { roomConfig } from "../utils/roomConfig";
 
 export function createRoom(socket: Socket, room: Room, io: Server) {
   try {
@@ -82,12 +89,66 @@ export function playerLeaveRoom(socket: Socket) {
   }
 }
 
-export function playerGuess(data: Guess, io: Server) {
-  const chat = playerMakeGuess(data);
-  io.to(data.roomName).emit("update-chat", chat);
+export function playerGuess(data: Guess, socket: Socket, io: Server) {
+  const { playerGuessRightId, room } = playerMakeGuess(data);
+  io.to(data.roomName).emit("update-chat", room.chat);
+  if (playerGuessRightId) {
+    io.to(playerGuessRightId).emit("player-guessed-right");
+  }
+  io.to(data.roomName).emit("update-players", room.players);
 }
 
 export function playerDraw(data: PlayerDraw, io: Server) {
   const canvas = playerMakeDraw(data);
+
   io.to(data.roomName).emit("update-canvas-state", canvas);
+}
+
+export function startTurn(roomName: string, io: Server) {
+  let room = startNewTurn(roomName);
+  let intervalId: string | number | NodeJS.Timeout;
+  const timerFunction = () => {
+    console.log(room.timer);
+    const playerWhoWon = hasPlayerWonTheGame(room);
+    if (playerWhoWon) {
+      const winMessage = `${playerWhoWon.nickName} won the game!`;
+      resetPlayersPoints(room);
+      io.to(roomName).emit("player-won-the-game", winMessage);
+      io.to(roomName).emit("update-players", room.players);
+    }
+    if (room.timer > 0) {
+      drecreaseTimer(room);
+      io.to(roomName).emit("update-timer", room.timer);
+    } else {
+      clearInterval(intervalId);
+      if (isCurrentPlayerStillInRoom(room)) {
+        io.to(roomName).emit("reset-turn", room.currentWord);
+      } else {
+        const otherPlayer = room.players[0];
+        io.to(otherPlayer?.id).emit(
+          "drawing-player-left-room",
+          room.currentPlayer
+        );
+      }
+    }
+    console.log("Timmer ticking");
+  };
+  intervalId = setInterval(timerFunction, 1000);
+
+  io.to(roomName).emit("turn-started", room);
+}
+
+export function stopTurn(roomName: string, io: Server) {
+  const room = turnHasStoped(roomName);
+  // let intervalId;
+  // if (room.timer > 0) {
+  //   intervalId = setInterval(() => {
+  //     drecreaseTimer(room);
+  //     io.to(roomName).emit("update-timer", room.timer);
+  //   }, 1000);
+  // } else {
+  //   clearInterval(intervalId);
+  //   room.timer = roomConfig.timer;
+  // }
+  io.to(roomName).emit("turn-stopped", room);
 }

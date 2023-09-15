@@ -10,6 +10,8 @@ import {
   playerLeaveRoom,
   playerGuess,
   playerDraw,
+  startTurn,
+  stopTurn,
 } from "./src/controllers/room.controller";
 import app from "./src/app";
 
@@ -35,9 +37,13 @@ io.on("connection", (socket) => {
 
   socket.on("player-leave-room", () => playerLeaveRoom(socket));
 
-  socket.on("player-guess", (data) => playerGuess(data, io));
+  socket.on("player-guess", (data) => playerGuess(data, socket, io));
 
   socket.on("player-draw", (data) => playerDraw(data, io));
+
+  socket.on("start-turn", (data) => startTurn(data, io));
+
+  socket.on("stop-turn", (data) => stopTurn(data, io));
 
   socket.on("disconnect", (data) => {
     console.log("user disconnected");
