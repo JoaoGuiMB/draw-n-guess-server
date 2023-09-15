@@ -88,15 +88,7 @@ export function playerMakeGuess(playerGuess: Guess) {
     message = `${playerNickname}: ${guess}`;
   } else {
     message = `${playerNickname} got the right word!`;
-    room.players.map((player) => {
-      if (player.nickName === playerNickname) {
-        player.points += 10;
-        playerGuessRightId = player.id;
-      }
-      if (player.nickName === room.currentPlayer) {
-        player.points += 5;
-      }
-    });
+    playerGuessRightId = increasePlayersPoints(playerNickname, room);
     if (!playerGuessRightId) {
       throw new CustomError(404, "Player not found");
     }
@@ -110,6 +102,20 @@ export function playerMakeGuess(playerGuess: Guess) {
 
 export function isGuessCorrect(guess: string, room: Room) {
   return guess.toLowerCase() === room.currentWord?.toLowerCase();
+}
+
+export function increasePlayersPoints(playerNickname: string, room: Room) {
+  let playerGuessRightId: string | undefined;
+  room.players.map((player) => {
+    if (player.nickName === playerNickname) {
+      player.points += 10;
+      playerGuessRightId = player.id;
+    }
+    if (player.nickName === room.currentPlayer) {
+      player.points += 5;
+    }
+  });
+  return playerGuessRightId;
 }
 
 export function playerMakeDraw(playerDraw: PlayerDraw) {
