@@ -9,7 +9,6 @@ import {
   playerMakeDraw,
   startNewTurn,
   drecreaseTimer,
-  turnHasStoped,
   isCurrentPlayerStillInRoom,
   hasPlayerWonTheGame,
   resetPlayersPoints,
@@ -135,19 +134,4 @@ export function startTurn(roomName: string, io: Server) {
   intervalId = setInterval(timerFunction, 1000);
 
   io.to(roomName).emit("turn-started", room);
-}
-
-export function stopTurn(roomName: string, io: Server) {
-  const room = turnHasStoped(roomName);
-  // let intervalId;
-  // if (room.timer > 0) {
-  //   intervalId = setInterval(() => {
-  //     drecreaseTimer(room);
-  //     io.to(roomName).emit("update-timer", room.timer);
-  //   }, 1000);
-  // } else {
-  //   clearInterval(intervalId);
-  //   room.timer = roomConfig.timer;
-  // }
-  io.to(roomName).emit("turn-stopped", room);
 }

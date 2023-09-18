@@ -20,3 +20,12 @@ export const mockPlayer: Player = {
   points: 0,
   avatar,
 };
+
+export const mockPlayer2: Player = {
+  avatar,
+  id: "xws9v-Wegjx4bvBKAABA",
+  isPlayerTurn: false,
+  nickName: "TestPlayer2",
+  playerGuessedRight: false,
+  points: 0,
+};

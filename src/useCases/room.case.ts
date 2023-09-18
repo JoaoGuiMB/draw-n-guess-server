@@ -12,6 +12,8 @@ export function pushRoom(room: Room) {
   if (roomExists(room.name)) {
     throw new CustomError(400, "A room with this name already exists");
   }
+  room.currentPlayer = "";
+  room.currentWord = "";
   room.timer = roomConfig.timer;
   room.chat = [];
   room.players = [];
@@ -167,20 +169,12 @@ export function setAllPlayersGuessToFalse(room: Room) {
   room.players.map((player) => (player.playerGuessedRight = false));
 }
 
-export function turnHasStoped(roomName: string) {
-  const room = validateRoomNotFoundByName(roomName);
-  room.currentPlayer = undefined;
-  room.currentWord = undefined;
-  room.players.map((player) => (player.isPlayerTurn = false));
-  return room;
-}
-
 export function hasPlayerWonTheGame(room: Room) {
   const player = room.players.find(
     (player) => player.points >= +room.maximumPoints
   );
   if (player) {
-    return `${player.nickName} won the game!}`;
+    return `${player.nickName} won the game!`;
   }
 }
 
