@@ -27,7 +27,7 @@ export function createRoom(socket: Socket, room: Room, io: Server) {
 
     pushRoom(room);
     socket.join(room.name);
-    io.to(socket.id).emit("room-created", {
+    socket.emit("room-created", {
       message: "The room was created successfully",
     });
   } catch (e) {
