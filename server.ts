@@ -3,16 +3,9 @@ import { Server } from "socket.io";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-import {
-  createRoom,
-  getRooms,
-  joinRoom,
-  playerLeaveRoom,
-  playerGuess,
-  playerDraw,
-  startTurn,
-} from "./src/controllers/room.controller";
 import app from "./src/app";
+
+import { handleSocketEvents } from "./src/utils/handleSocketEvents";
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
@@ -27,24 +20,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
-
-  socket.on("create-room", (data) => createRoom(socket, data, io));
-
-  socket.on("get-rooms", () => getRooms(socket));
-
-  socket.on("join-room", (data) => joinRoom(socket, data));
-
-  socket.on("player-leave-room", () => playerLeaveRoom(socket));
-
-  socket.on("player-guess", (data) => playerGuess(data, socket, io));
-
-  socket.on("player-draw", (data) => playerDraw(data, io));
-
-  socket.on("start-turn", (data) => startTurn(data, io));
-
-  socket.on("disconnect", (data) => {
-    console.log("user disconnected");
-    playerLeaveRoom(socket);
-    socket.disconnect();
-  });
+  handleSocketEvents(io, socket);
 });
+
+export { server, io };

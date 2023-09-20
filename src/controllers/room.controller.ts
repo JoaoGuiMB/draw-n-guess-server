@@ -21,7 +21,7 @@ import { JoinRoom } from "../types/JoinRoom";
 import { PlayerDraw } from "../types/Draw";
 import { roomConfig } from "../utils/roomConfig";
 
-export function createRoom(socket: Socket, room: Room, io: Server) {
+export function createRoom(io: Server, socket: Socket, room: Room) {
   try {
     createRoomSchema.parse(room);
 
