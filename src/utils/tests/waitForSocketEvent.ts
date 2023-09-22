@@ -1,11 +1,7 @@
 import { Socket as ClientSocket } from "socket.io-client";
 
-interface Response {
-  message: string;
-}
-
 export default function waitFor(emitter: ClientSocket, event: string) {
-  return new Promise<Response>((resolve) => {
+  return new Promise<any>((resolve) => {
     emitter.once(event, resolve);
   });
 }
