@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { ClientReady, Guess, Room } from "../types/Room";
+import { Guess, Room } from "../types/Room";
 import {
   pushRoom,
   getAllRooms,
@@ -21,7 +21,7 @@ import { JoinRoom } from "../types/JoinRoom";
 import { PlayerDraw } from "../types/Draw";
 import { roomConfig } from "../utils/roomConfig";
 
-export function createRoom(io: Server, socket: Socket, room: Room) {
+export function createRoom(socket: Socket, room: Room) {
   try {
     createRoomSchema.parse(room);
 
@@ -32,8 +32,9 @@ export function createRoom(io: Server, socket: Socket, room: Room) {
     });
   } catch (e) {
     if (e instanceof z.ZodError) {
+      const message = JSON.parse(e.message)[0].message;
       socket.emit("invalid-data", {
-        message: e.message,
+        message,
       });
     } else if (e instanceof CustomError) {
       socket.emit("create-room-error", {

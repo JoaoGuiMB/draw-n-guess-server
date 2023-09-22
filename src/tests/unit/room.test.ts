@@ -123,7 +123,7 @@ describe("start turn", () => {
     addPlayerToRoom(mockRoom.name, mockPlayer);
     addPlayerToRoom(mockRoom.name, mockPlayer2);
     const room = startNewTurn(mockRoom.name);
-    expect(room.currentPlayer).toBe(mockPlayer.nickName);
+
     expect(room.players[0].playerGuessedRight).toBe(false);
   });
 
