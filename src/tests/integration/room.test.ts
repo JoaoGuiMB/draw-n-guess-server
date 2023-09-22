@@ -1,46 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import app from "../../app";
+import { Socket as ClientSocket } from "socket.io-client";
 
 import { mockRoom } from "../mocks/room";
 import { Server, Socket } from "socket.io";
-import { Socket as ClientSocket, io as ioc } from "socket.io-client";
-
-import { handleSocketEvents } from "../../utils/handleSocketEvents";
-
-import { createServer } from "http";
-
-interface Response {
-  message: string;
-}
-
-function waitFor(emitter: ClientSocket, event: string) {
-  return new Promise<Response>((resolve) => {
-    emitter.once(event, resolve);
-  });
-}
-
-async function setupServer() {
-  const httpServer = createServer(app);
-
-  const io = new Server(httpServer);
-  httpServer.listen(PORT);
-
-  const clientSocket = ioc(`ws://localhost:${PORT}`, {
-    transports: ["websocket"],
-  });
-
-  let serverSocket: Socket | undefined = undefined;
-  io.on("connection", (connectedSocket) => {
-    serverSocket = connectedSocket;
-    handleSocketEvents(io, serverSocket);
-  });
-
-  await waitFor(clientSocket, "connect");
-
-  return { io, clientSocket, serverSocket };
-}
-
-const PORT = 1337;
+import setupTestServer from "../../utils/tests/setupTestServer";
+import waitFor from "../../utils/tests/waitForSocketEvent";
 
 describe("create room", () => {
   let io: Server;
@@ -49,7 +13,7 @@ describe("create room", () => {
   let clientSocket: ClientSocket;
 
   beforeAll(async () => {
-    const response = await setupServer();
+    const response = await setupTestServer();
     io = response.io;
     clientSocket = response.clientSocket;
     serverSocket = response.serverSocket;
