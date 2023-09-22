@@ -13,7 +13,7 @@ type Controller = (io: Server, socket: Socket, data: any) => void;
 
 export function handleSocketEvents(io: Server, socket: Socket) {
   const socketsEvents = {
-    "create-room": (data: any) => createRoom(io, socket, data),
+    "create-room": (data: any) => createRoom(socket, data),
     "get-rooms": (data: any) => getRooms(socket),
     "join-room": (data: any) => joinRoom(socket, data),
     "player-leave-room": (data: any) => playerLeaveRoom(socket),
