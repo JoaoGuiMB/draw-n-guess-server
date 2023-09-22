@@ -8,7 +8,7 @@ import { handleSocketEvents } from "../../utils/handleSocketEvents";
 import { createServer } from "http";
 import waitFor from "./waitForSocketEvent";
 
-const PORT = process.env.PORT || 5555;
+const PORT = process.env.PORT;
 
 export default async function setupTestServer() {
   const httpServer = createServer(app);
