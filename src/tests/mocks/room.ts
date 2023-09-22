@@ -5,6 +5,8 @@ export const mockRoom: Room = {
   maximumPoints: "80",
   category: "ANIME",
   maximumNumberOfPlayers: 2,
+  currentPlayer: "",
+  currentWord: "",
   players: [],
   timer: 60,
   chat: [],
