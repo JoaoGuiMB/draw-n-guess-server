@@ -49,7 +49,7 @@ export function getRooms(socket: Socket) {
   socket.emit("rooms", rooms);
 }
 
-export function joinRoom(socket: Socket, joinRoomData: JoinRoom) {
+export function joinRoom(io: Server, socket: Socket, joinRoomData: JoinRoom) {
   try {
     const { roomName, player } = joinRoomData;
     player.id = socket.id;
@@ -60,7 +60,8 @@ export function joinRoom(socket: Socket, joinRoomData: JoinRoom) {
       playerId: socket.id,
       room: joinedRoom,
     });
-    socket.to(roomName).emit("update-players", joinedRoom.players);
+    // before it was socket.to
+    io.to(roomName).emit("update-players", joinedRoom.players);
   } catch (e) {
     if (e instanceof CustomError) {
       socket.emit("join-room-error", {

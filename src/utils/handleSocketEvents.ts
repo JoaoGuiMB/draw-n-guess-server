@@ -15,7 +15,7 @@ export function handleSocketEvents(io: Server, socket: Socket) {
   const socketsEvents = {
     "create-room": (data: any) => createRoom(socket, data),
     "get-rooms": (data: any) => getRooms(socket),
-    "join-room": (data: any) => joinRoom(socket, data),
+    "join-room": (data: any) => joinRoom(io, socket, data),
     "player-leave-room": (data: any) => playerLeaveRoom(socket),
     "player-guess": (data: any) => playerGuess(data, socket, io),
     "player-draw": (data: any) => playerDraw(data, io),
