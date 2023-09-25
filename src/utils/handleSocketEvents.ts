@@ -9,29 +9,23 @@ import {
   startTurn,
 } from "../controllers/room.controller";
 
-type Controller = (io: Server, socket: Socket, data: any) => void;
-
 export function handleSocketEvents(io: Server, socket: Socket) {
-  const socketsEvents = {
-    "create-room": (data: any) => createRoom(socket, data),
+  const socketsEvents: Record<string, (data: any) => void> = {
+    "create-room": (data) => createRoom(socket, data),
     "get-rooms": () => getRooms(socket),
-    "join-room": (data: any) => joinRoom(io, socket, data),
+    "join-room": (data) => joinRoom(io, socket, data),
     "player-leave-room": () => playerLeaveRoom(socket),
-    "player-guess": (data: any) => playerGuess(data, socket, io),
-    "player-draw": (data: any) => playerDraw(data, io),
-    "start-turn": (data: any) => startTurn(data, io),
+    "player-guess": (data) => playerGuess(data, socket, io),
+    "player-draw": (data) => playerDraw(data, io),
+    "start-turn": (data) => startTurn(data, io),
     disconnect: () => {
-      console.log("user disconnected"),
-        playerLeaveRoom(socket),
-        socket.disconnect();
+      console.log("user disconnected");
+      playerLeaveRoom(socket);
+      socket.disconnect();
     },
   };
 
-  const socketMap: Map<string, Controller> = new Map(
-    Object.entries(socketsEvents)
-  );
-
-  for (const [event, controller] of socketMap.entries()) {
-    socket.on(event, controller);
+  for (const event in socketsEvents) {
+    socket.on(event, socketsEvents[event]);
   }
 }
