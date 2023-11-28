@@ -29,3 +29,15 @@ export function handleSocketEvents(io: Server, socket: Socket) {
     socket.on(event, socketsEvents[event]);
   }
 }
+
+export function handleSocketEventsExample(io: Server, socket: Socket) {
+  const socketsEvents: Record<string, (data: any) => void> = {
+    "multiply-by-2": (data) => {
+      const result = data * 2;
+      socket.emit("multiplied-by-2", result);
+    },
+  };
+  for (const event in socketsEvents) {
+    socket.on(event, socketsEvents[event]);
+  }
+}
