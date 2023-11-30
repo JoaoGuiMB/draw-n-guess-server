@@ -12,6 +12,8 @@ export function pushRoom(room: Room) {
   if (roomExists(room.name)) {
     throw new CustomError(400, "A room with this name already exists");
   }
+  room.currentPlayer = "";
+  room.currentWord = "";
   room.timer = roomConfig.timer;
   room.chat = [];
   room.players = [];
@@ -36,7 +38,7 @@ export function validateRoomNotFoundByName(roomName: string) {
   return room;
 }
 
-export function addToRoom(roomName: string, player: Player) {
+export function addPlayerToRoom(roomName: string, player: Player) {
   const room = validateRoomNotFoundByName(roomName);
   if (room.players.length >= room.maximumNumberOfPlayers)
     throw new CustomError(400, "Room is full");
@@ -88,15 +90,7 @@ export function playerMakeGuess(playerGuess: Guess) {
     message = `${playerNickname}: ${guess}`;
   } else {
     message = `${playerNickname} got the right word!`;
-    room.players.map((player) => {
-      if (player.nickName === playerNickname) {
-        player.points += 10;
-        playerGuessRightId = player.id;
-      }
-      if (player.nickName === room.currentPlayer) {
-        player.points += 5;
-      }
-    });
+    playerGuessRightId = increasePlayersPoints(playerNickname, room);
     if (!playerGuessRightId) {
       throw new CustomError(404, "Player not found");
     }
@@ -110,6 +104,20 @@ export function playerMakeGuess(playerGuess: Guess) {
 
 export function isGuessCorrect(guess: string, room: Room) {
   return guess.toLowerCase() === room.currentWord?.toLowerCase();
+}
+
+export function increasePlayersPoints(playerNickname: string, room: Room) {
+  let playerGuessRightId: string | undefined;
+  room.players.map((player) => {
+    if (player.nickName === playerNickname) {
+      player.points += 10;
+      playerGuessRightId = player.id;
+    }
+    if (player.nickName === room.currentPlayer) {
+      player.points += 5;
+    }
+  });
+  return playerGuessRightId;
 }
 
 export function playerMakeDraw(playerDraw: PlayerDraw) {
@@ -161,20 +169,12 @@ export function setAllPlayersGuessToFalse(room: Room) {
   room.players.map((player) => (player.playerGuessedRight = false));
 }
 
-export function turnHasStoped(roomName: string) {
-  const room = validateRoomNotFoundByName(roomName);
-  room.currentPlayer = undefined;
-  room.currentWord = undefined;
-  room.players.map((player) => (player.isPlayerTurn = false));
-  return room;
-}
-
 export function hasPlayerWonTheGame(room: Room) {
   const player = room.players.find(
     (player) => player.points >= +room.maximumPoints
   );
   if (player) {
-    return player;
+    return `${player.nickName} won the game!`;
   }
 }
 
@@ -184,4 +184,8 @@ export function resetPlayersPoints(room: Room) {
 
 export function drecreaseTimer(room: Room) {
   room.timer--;
+}
+
+export function resetRooms() {
+  rooms.splice(0, rooms.length);
 }

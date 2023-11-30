@@ -12,5 +12,5 @@ export const createRoomSchema = z.object({
 
   category: CategoryEnum,
   maximumPoints: maximumPointsEnum,
-  maximumNumberOfPlayers: z.string(),
+  maximumNumberOfPlayers: z.number().min(2).max(10),
 });

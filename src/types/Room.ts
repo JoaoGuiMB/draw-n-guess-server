@@ -9,8 +9,8 @@ export interface Room {
   category: Category;
   maximumNumberOfPlayers: number;
   maximumPoints: MaximumPoints;
-  currentWord?: string;
-  currentPlayer?: string;
+  currentWord: string;
+  currentPlayer: string;
   chat: string[];
   players: Player[];
   canvas: ExcalidrawElement[];
